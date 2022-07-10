@@ -6,6 +6,7 @@ namespace PlayerControl
 {
     public class CameraFollowerPrototype : MonoBehaviour
     {
+        [SerializeField] private bool smoothMovement = false;
         [SerializeField] private Transform target;
         [SerializeField] private float smoothTime = 0.5f;
 
@@ -19,7 +20,7 @@ namespace PlayerControl
 
         void LateUpdate()
         {
-            transform.position = Vector3.SmoothDamp(transform.position, target.position + initialDistance, ref currentVelocity, smoothTime);
+            transform.position = Vector3.SmoothDamp(transform.position, target.position + initialDistance, ref currentVelocity, (smoothMovement ? smoothTime : 0));
         }
     }
 }

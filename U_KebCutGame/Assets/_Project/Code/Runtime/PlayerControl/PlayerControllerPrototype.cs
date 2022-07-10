@@ -14,6 +14,9 @@ namespace PlayerControl
 
         private Rigidbody gunRigidbody;
         private Vector3 forceDirection;
+        private Quaternion rotationPreCollision;
+        private Vector3 velocityPreCollision;
+        private Vector3 angularVelocityPreCollision;
 
         void Awake()
         {
@@ -30,11 +33,38 @@ namespace PlayerControl
                 gunRigidbody.angularVelocity = Vector3.zero;
                 gunRigidbody.velocity = Vector3.zero;
 
-                //Vector3 torqueDirection = Vector3.Dot(transform.forward, Vector3.forward) > 0 ? Vector3.right : -Vector3.right;
                 gunRigidbody.AddTorque(torqueForce * Vector3.right);
-                
                 gunRigidbody.AddForce(impulseForce * forceDirection);
             }
+        }
+
+        private void FixedUpdate()
+        {
+
+            velocityPreCollision = gunRigidbody.velocity;
+            angularVelocityPreCollision = gunRigidbody.angularVelocity;
+            rotationPreCollision = transform.rotation;
+            Debug.DrawRay(transform.position, 5 * angularVelocityPreCollision, Color.green);
+
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            //Check collision with ground
+
+
+            var sliceableItem = collision.gameObject.GetComponent<SliceableItem>();
+
+            if(sliceableItem == null)
+            {
+                return;
+            }
+
+            //Resetting previous values
+            transform.rotation = rotationPreCollision;
+            gunRigidbody.velocity = velocityPreCollision;
+            //gunRigidbody.angularVelocity = angularVelocityPreCollision;
+            gunRigidbody.angularVelocity = Vector3.zero;
         }
     }
 }
